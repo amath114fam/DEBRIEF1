@@ -53,7 +53,7 @@ def les_transactions():
         for index, element in enumerate(listes_transactions, start=1) :
             numero = element["numero"]
             montant= element["montant"]
-            print(f"{index}. Envoie de {montant}fcf au {numero}")
+            print(f"{index}. Envoie de {montant}fcf au {numero} statut : {element["statut"]}")
     else:
         print("Aucune transaction disponible")
         print("-" * 10)
@@ -103,7 +103,8 @@ def transfert_argent():
     mon_compte["solde"] -= int(montant)
     mes_transactions ={
         "numero" : numero,
-        "montant" : montant
+        "montant" : montant,
+        "statut" : "envoyé"
     }
     listes_transactions.append(mes_transactions)
     transaction()
@@ -227,11 +228,22 @@ def forfait():
             print("Choix invalide ")
             print(".....................")
             return
-nombre_annulation = 0 #ça permet de suivre combien de fois on a fait une annulation
+fichier3 = "last_annulation.json"
+nombre_annulation = {"last_delete" : 0} #ça permet de suivre combien de fois on a fait une annulation
+def transaction_annulée():
+    with open(fichier3,"w") as file:
+        json.dump(nombre_annulation,file,indent=4)
+try:
+    with open(fichier3,"r") as file:
+        nombre_annulation = json.load(file)
+except FileNotFoundError:
+    transaction_annulée()
+    
 def annuler_transaction():
-    global nombre_annulation
+    # global nombre_annulation
     global listes_transactions
-    nombre_annulation += 1
+    nombre_annulation["last_delete"] = 1
+    transaction_annulée()
     if listes_transactions:
         dernier_transac = listes_transactions[-1]["montant"]
         while True:
@@ -248,7 +260,7 @@ def annuler_transaction():
                print("Veuillez entrer un nombre valide")
         mon_compte["solde"] += int(dernier_transac)
         save()
-        del listes_transactions[-1]
+        listes_transactions[-1]["statut"] = "annulé"
         transaction()
         print("-" * 10)
         print("Transaction annulée")
@@ -277,7 +289,7 @@ while True:
             transfert_argent()
             print("-" * 30)
         case "3":
-            if nombre_annulation < 1:
+            if nombre_annulation["last_delete"] < 1:
                 annuler_transaction()
             else:
                 print("-" * 30)
