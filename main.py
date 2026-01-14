@@ -14,7 +14,7 @@ def afficher_menu():
     return choix
 
 #**************le solde initial******************
-mon_compte = {"solde" : 100}
+mon_compte = {"solde" : 1000000}
 #***********************************************
 
 #*****************creation du fichier solde.json qui stocke et met à jour le solde**************
@@ -50,13 +50,14 @@ def les_transactions():
     print("-" * 10)
     if listes_transactions:
         print("Les transactions")
-        for element in listes_transactions:
+        for index, element in enumerate(listes_transactions, start=1) :
             numero = element["numero"]
             montant= element["montant"]
-            print(montant,numero)
+            print(f"{index}. Envoie de {montant}fcf au {numero}")
     else:
         print("Aucune transaction disponible")
         print("-" * 10)
+    print("-" * 10)
     print("1. Retour au menu")
     print("2. Quitter")
     choix_redirect = input("Choisis : ")
