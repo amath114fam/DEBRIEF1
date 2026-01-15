@@ -15,7 +15,7 @@ def retour_au_menu():
     print("2. Quitter")
     choix_redirect = input("Choisis 1 ou 2 : ")
     if choix_redirect == "1":
-        afficher_menu()
+        return
     elif choix_redirect == "2":
         exit()
     else:
