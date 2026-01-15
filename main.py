@@ -77,7 +77,7 @@ def transfert_argent():
     print("Vous voulez faire un transfert d'argent")
     print("-" * 5)
     numero = input("Entrer le numéro du destinataire : ").replace(" ", "")
-    while len(numero) != 9 or not numero.isdigit() or not numero.startswith("77"):
+    while len(numero) != 9 or not numero.isdigit() or not (numero.startswith("77") or numero.startswith("78")):
         print("Saisie incorrect")
         numero = input("Entrer un numéro 77 ********: ").replace(" ", "")
     montant = input("Entrer le montant : ").replace(" ","")
@@ -104,7 +104,7 @@ def transfert_argent():
     mes_transactions ={
         "numero" : numero,
         "montant" : montant,
-        "statut" : "envoyé"
+        "statut" : "envoye"
     }
     listes_transactions.append(mes_transactions)
     transaction()
@@ -143,7 +143,7 @@ def forfait():
         choix_forfait = input("Choisis 1 ou 2 ou 3 : ")
         if choix_forfait == "1":
             numero = input("Entrer le numéro le numéro du destinataire : ").replace(" ", "")
-            while len(numero) != 9 or not numero.isdigit() or not numero.startswith("77"):
+            while len(numero) != 9 or not numero.isdigit() or not (numero.startswith("77") or numero.startswith("78")):
                 print("Saisie incorrect")
                 numero = input("Entrer un numéro 77 ********: ").replace(" ", "")
             while True:
@@ -166,7 +166,7 @@ def forfait():
                 save()
         elif choix_forfait == "2":
             numero = input("Entrer le numéro le numéro du destinataire : ").replace(" ", "")
-            while len(numero) != 9 or not numero.isdigit() or not numero.startswith("77"):
+            while len(numero) != 9 or not numero.isdigit() or not (numero.startswith("77") or numero.startswith("78")):
                 print("Saisie incorrect")
                 numero = input("Entrer un numéro 77 ********: ").replace(" ", "")
             while True:
@@ -189,7 +189,7 @@ def forfait():
                 save()
         elif choix_forfait == "3":
             numero = input("Entrer le numéro le numéro du destinataire : ").replace(" ", "")
-            while len(numero) != 9 or not numero.isdigit() or not numero.startswith("77"):
+            while len(numero) != 9 or not numero.isdigit() or not (numero.startswith("77") or numero.startswith("78")):
                 print("Saisie incorrect")
                 numero = input("Entrer un numéro 77 ********: ").replace(" ", "")
             while True:
@@ -228,22 +228,10 @@ def forfait():
             print("Choix invalide ")
             print(".....................")
             return
-fichier3 = "last_annulation.json"
-nombre_annulation = {"last_delete" : 0} #ça permet de suivre combien de fois on a fait une annulation
-def transaction_annulée():
-    with open(fichier3,"w") as file:
-        json.dump(nombre_annulation,file,indent=4)
-try:
-    with open(fichier3,"r") as file:
-        nombre_annulation = json.load(file)
-except FileNotFoundError:
-    transaction_annulée()
     
 def annuler_transaction():
-    # global nombre_annulation
+    """Pour annuler une transaction"""
     global listes_transactions
-    nombre_annulation["last_delete"] = 1
-    transaction_annulée()
     if listes_transactions:
         dernier_transac = listes_transactions[-1]["montant"]
         while True:
@@ -260,7 +248,7 @@ def annuler_transaction():
                print("Veuillez entrer un nombre valide")
         mon_compte["solde"] += int(dernier_transac)
         save()
-        listes_transactions[-1]["statut"] = "annulé"
+        listes_transactions[-1]["statut"] = "annule"
         transaction()
         print("-" * 10)
         print("Transaction annulée")
@@ -289,12 +277,19 @@ while True:
             transfert_argent()
             print("-" * 30)
         case "3":
-            if nombre_annulation["last_delete"] < 1:
-                annuler_transaction()
-            else:
+            annulation = "annule"
+            deja_annule = False
+            for element in listes_transactions:
+                for annuler in element.values():
+                    if annulation == annuler:
+                       deja_annule = True
+                       break
+            if deja_annule:
                 print("-" * 30)
                 print("Impossible d'annuler le dernier transaction")
                 print("-" * 30)
+            else:
+                annuler_transaction()
         case "4":
             print("-" * 30)
             les_transactions()
