@@ -1,22 +1,42 @@
 import json
 def afficher_menu(): 
     """la fonction pour afficher le menu"""
-    print("-" * 30)
-    print(f"Solde actuel : {mon_compte["solde"]}")
-    print("-" * 30)
-    print("1. Acheter un forfait")
-    print("2. Effectuer un transfert")
-    print("3. Annuler le dernier transfert")
-    print("4. Voir l’historique des transactions")
-    print("5. Quitter")
+    print("1. Consulter le solde")
+    print("2. Acheter un forfait")
+    print("3. Effectuer un transfert")
+    print("4. Annuler le dernier transfert")
+    print("5. Voir l’historique des transactions")
+    print("6. Quitter")
 
     choix = input("Choisis un numéro : ")
     return choix
-
+def retour_au_menu():
+    print("1. Retour au menu")
+    print("2. Quitter")
+    choix_redirect = input("Choisis 1 ou 2 : ")
+    if choix_redirect == "1":
+        afficher_menu()
+    elif choix_redirect == "2":
+        exit()
+    else:
+        print("Choix invalide ")
+        print(".....................")
+        return
 #**************le solde initial******************
 mon_compte = {"solde" : 1000000}
 #***********************************************
-
+def consulter_solde():
+    """fonction pour afficher le solde"""
+    while True:
+        code = input("Entrer ton code secret : ")
+        try:
+            if int(code) == code_secret:
+                break
+            else: 
+                print("Code incorrect")
+        except ValueError:
+            print("Veuillez entrer un code valide")
+    print(f"Le solde de votre compte est : {mon_compte["solde"]}")
 #*****************creation du fichier solde.json qui stocke et met à jour le solde**************
 fichier = "solde.json"
 def save():
@@ -57,19 +77,7 @@ def les_transactions():
     else:
         print("Aucune transaction disponible")
         print("-" * 10)
-    print("-" * 10)
-    print("1. Retour au menu")
-    print("2. Quitter")
-    choix_redirect = input("Choisis : ")
-    if choix_redirect == "1":
-        return
-    elif choix_redirect == "2":
-        print("-" * 10)
-        exit()
-    else:
-        print("Saisie incorrecte")
-        print("-" * 10)
-        exit()
+    retour_au_menu()
 def transfert_argent():
     """Transfert d'argent"""
     global listes_transactions
@@ -114,18 +122,31 @@ def transfert_argent():
     print("-" * 30)
     print(f"Solde actuel : {mon_compte["solde"]}")
     print("-" * 30)
-    print("1. Retour au menu")
-    print("2. Quitter")
-    choix_redirect = input("Choisis : ")
-    if choix_redirect == "1":
-        return
-    elif choix_redirect == "2":
-        print(".....................")
-        exit()
+    retour_au_menu()
+def achat_forfait(montant):
+    """Pour acheter un forfait"""
+    numero = input("Entrer le numéro le numéro du destinataire : ").replace(" ", "")
+    while len(numero) != 9 or not numero.isdigit() or not (numero.startswith("77") or numero.startswith("78")):
+        print("Saisie incorrect")
+        numero = input("Entrer un numéro 77 ********: ").replace(" ", "")
+    while True:
+        code = input("Entrer ton code secret : ")
+        try:
+            if int(code) == code_secret:
+                break
+            else: 
+                print("Code incorrect")
+        except ValueError:
+            print("Veuillez entrer un code valide")
+    if mon_compte["solde"] < montant:
+        print("solde insuffisant")
     else:
-        print("Saisie incorrecte")
-        print(".....................")
-        exit()
+        print("-" * 30)
+        print(f"vous avez activé le pass 500 Mo à 1000f sur le numéro {numero}")
+        print("-" * 30)
+        mon_compte["solde"] -= montant
+        save()
+
 def forfait():
     """Acheter un forfait"""
     global code_secret
@@ -135,99 +156,21 @@ def forfait():
         print("1. Pass 100 Mo à 500f")
         print("2. Pass 500 Mo à 1000f")
         print("3. Pass 1 Go à 2000f")
-        montant_forfait = {
-            "forfait1" : 500,
-            "forfait2" : 1000,
-            "forfait3" : 2000,
-        }
         choix_forfait = input("Choisis 1 ou 2 ou 3 : ")
         if choix_forfait == "1":
-            numero = input("Entrer le numéro le numéro du destinataire : ").replace(" ", "")
-            while len(numero) != 9 or not numero.isdigit() or not (numero.startswith("77") or numero.startswith("78")):
-                print("Saisie incorrect")
-                numero = input("Entrer un numéro 77 ********: ").replace(" ", "")
-            while True:
-                code = input("Entrer ton code secret : ")
-                try:
-                    if int(code) == code_secret:
-                        break
-                    else: 
-                        print("Code incorrect")
-                except ValueError:
-                    print("Veuillez entrer un code valide")
-            if mon_compte["solde"] < montant_forfait["forfait1"]:
-                print("solde insuffisant")
-                break
-            else:
-                print("-" * 30)
-                print(f"vous avez activé le pass 500 Mo à 1000f sur le numéro {numero}")
-                print("-" * 30)
-                mon_compte["solde"] -= montant_forfait["forfait1"]
-                save()
+            achat_forfait(500)
+            break
         elif choix_forfait == "2":
-            numero = input("Entrer le numéro le numéro du destinataire : ").replace(" ", "")
-            while len(numero) != 9 or not numero.isdigit() or not (numero.startswith("77") or numero.startswith("78")):
-                print("Saisie incorrect")
-                numero = input("Entrer un numéro 77 ********: ").replace(" ", "")
-            while True:
-                code = input("Entrer ton code secret : ")
-                try:
-                    if int(code) == code_secret:
-                        break
-                    else: 
-                        print("Code incorrect")
-                except ValueError:
-                    print("Veuillez entrer un code valide")
-            if mon_compte["solde"] < montant_forfait["forfait2"]:
-                print("solde insuffisant")
-                break
-            else:
-                print("-" * 30)
-                print(f"vous avez activé le pass 500 Mo à 1000f sur le numéro {numero}")
-                print("-" * 30)
-                mon_compte["solde"] -= montant_forfait["forfait2"]
-                save()
+           achat_forfait(1000)
+           break
         elif choix_forfait == "3":
-            numero = input("Entrer le numéro le numéro du destinataire : ").replace(" ", "")
-            while len(numero) != 9 or not numero.isdigit() or not (numero.startswith("77") or numero.startswith("78")):
-                print("Saisie incorrect")
-                numero = input("Entrer un numéro 77 ********: ").replace(" ", "")
-            while True:
-                code = input("Entrer ton code secret : ")
-                try:
-                    if int(code) == code_secret:
-                        break
-                    else: 
-                        print("Code incorrect")
-                except ValueError:
-                    print("Veuillez entrer un code valide")
-            if mon_compte["solde"] < montant_forfait["forfait3"]:
-                print("solde insuffisant")
-                break
-            else:
-                print("-" * 30)
-                print(f"vous avez activé le pass 1Go Mo à 2000f sur le numéro {numero}")
-                print("-" * 30)
-                mon_compte["solde"] -= montant_forfait["forfait3"]
-                save()
+            achat_forfait(2000)
+            break
         else :
             print("Choix invalide ")
+            choix_forfait = input("Choisis 1 ou 2 ou 3 : ")
             print("-" * 30)
-            return
-        print("-" * 30)
-        print(f"Solde actuel : {mon_compte["solde"]}")
-        print("-" * 30)
-        print("1. Retour au menu")
-        print("2. Quitter")
-        choix_redirect = input("Choisis 1 ou 2 : ")
-        if choix_redirect == "1":
-            return
-        elif choix_redirect == "2":
-            exit()
-        else:
-            print("Choix invalide ")
-            print(".....................")
-            return
+    retour_au_menu()
     
 def annuler_transaction():
     """Pour annuler une transaction"""
@@ -270,13 +213,17 @@ while True:
     match choix:
         case "1":
             print("-" * 30)
-            forfait()
+            consulter_solde()
             print("-" * 30)
         case "2":
             print("-" * 30)
-            transfert_argent()
+            forfait()
             print("-" * 30)
         case "3":
+            print("-" * 30)
+            transfert_argent()
+            print("-" * 30)
+        case "4":
             annulation = "annule"
             deja_annule = False
             for element in listes_transactions:
@@ -290,11 +237,11 @@ while True:
                 print("-" * 30)
             else:
                 annuler_transaction()
-        case "4":
+        case "5":
             print("-" * 30)
             les_transactions()
             print("-" * 30)
-        case "5":
+        case "6":
             break
         case _:
             print("Veillez choisir un numéro valide")
